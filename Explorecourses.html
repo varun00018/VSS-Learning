@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Course Explorer</title>
+    <style>
+        :root {
+            --primary-bg: #5A0D50;
+            --secondary-bg: #8B0A50;
+            --interactive: #C2185B;
+            --accent-orange: #D35400;
+            --accent-yellow: #F39C12;
+            --text-primary: #E0E0E0;
+            --text-secondary: #B0B0B0;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Arial', sans-serif;
+        }
+
+        body {
+            background-color: var(--primary-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .quote-section {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--secondary-bg);
+        }
+
+        .quote {
+            font-style: italic;
+            font-size: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .main-title {
+            font-size: 3rem;
+            margin: 2rem 0;
+            background: linear-gradient(45deg, var(--interactive), var(--accent-yellow));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: titleGlow 2s infinite alternate;
+        }
+
+        @keyframes titleGlow {
+            from { opacity: 0.8; }
+            to { opacity: 1; }
+        }
+
+        .filter-section {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-container {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+    position: relative;
+}
+
+.search-bar {
+    width: 100%;
+    padding: 1rem;
+    font-size: 1.1rem;
+    border: 2px solid var(--secondary-bg);
+    border-radius: 25px;
+    background-color: rgba(139, 10, 80, 0.1);
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.search-bar:focus {
+    border-color: var(--interactive);
+    box-shadow: 0 0 15px rgba(194, 24, 91, 0.3);
+}
+
+.search-bar::placeholder {
+    color: var(--text-secondary);
+}
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .filter-btn:hover {
+            background-color: var(--interactive);
+        }
+
+        .filter-btn.active {
+            background-color: var(--interactive);
+        }
+
+        .grade-dropdown {
+            display: none;
+            position: absolute;
+            background-color: var(--secondary-bg);
+            padding: 1rem;
+            border-radius: 4px;
+            z-index: 10;
+        }
+
+        .grade-dropdown.show {
+            display: block;
+        }
+
+        .course-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            padding: 2rem;
+        }
+
+        .course-card {
+            background-color: var(--secondary-bg);
+            padding: 1.5rem;
+            border-radius: 8px;
+            transition: transform 0.3s;
+        }
+
+        .course-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .join-btn {
+            background-color: var(--interactive);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            width: 100%;
+            margin-top: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 100;
+        }
+
+        .modal-content {
+            position: relative;
+            background-color: var(--secondary-bg);
+            margin: 10% auto;
+            padding: 2rem;
+            width: 80%;
+            max-width: 600px;
+            border-radius: 8px;
+        }
+
+        .close-btn {
+            position: absolute;
+            right: 1rem;
+            top: 1rem;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-primary);
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            padding: 2rem;
+        }
+
+        .page-btn {
+            padding: 0.5rem 1rem;
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .page-btn.active {
+            background-color: var(--interactive);
+        }
+
+        .domain-filter {
+            width: 100%;
+            max-width: 600px;
+            margin: 1rem auto;
+            padding: 0 1rem;
+        }
+
+        .domain-btn {
+            padding: 0.5rem 1rem;
+            margin: 0.25rem;
+            background-color: var(--secondary-bg);
+            color: var(--text-primary);
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .domain-btn:hover {
+            background-color: var(--interactive);
+            transform: translateY(-2px);
+        }
+
+        .domain-btn.active {
+            background-color: var(--interactive);
+            box-shadow: 0 0 10px rgba(194, 24, 91, 0.3);
+        }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .nav-bar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background-color: #880E4F;
+            padding: 10px 20px;
+            color: white;
+        }
+        .nav-bar .logo {
+            display: flex;
+            align-items: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .nav-bar .logo img {
+            width: 30px;
+            margin-right: 10px;
+        }
+        .nav-links {
+            display: flex;
+            gap: 15px;
+        }
+        .nav-links a {
+            text-decoration: none;
+            color: white;
+            font-size: 16px;
+        }
+        .nav-links a:hover {
+            text-decoration: underline;
+        }
+        .profile {
+            width: 35px;
+            height: 35px;
+            border-radius: 50%;
+            background-color: #ddd;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="nav-bar">
+        <div class="logo">
+            <img src="https://img.icons8.com/?size=100&id=79387&format=png&color=F39C12" alt="logo">
+            VSS Learning
+        </div>
+        <div class="nav-links">
+            <a href="#">Dashboard</a>
+            <a href="#">My Courses</a>
+            <a href="#">Explore Courses</a>
+            <a href="#">Performance</a>
+            <a href="#">Leaderboard</a>
+            <a href="#">Exam Corner</a>
+            <a href="#">Community</a>
+        </div>
+        <div class="profile"></div>
+    </div>
+    <div class="quote-section">
+        <p class="quote">Excuses makes today easy , but they make tomorrow hard.<br>Discipline makes today hard but makes tomorrow easy</p>
+        <h1 class="main-title">Choose Your Course Now</h1>
+        <h2>Explore Courses</h2>
+    </div>
+
+    <div class="search-container">
+        <input type="text" 
+               class="search-bar" 
+               placeholder="Search for courses..." 
+               id="searchInput">
+    </div>
+
+    <div class="filter-section">
+        <button class="filter-btn" data-filter="free">Free Courses</button>
+        <button class="filter-btn" data-filter="paid">Paid Courses</button>
+        <button class="filter-btn" data-filter="grade">Grade-Specific Courses</button>
+        <div class="grade-dropdown" id="gradeDropdown">
+            <button class="filter-btn" data-grade="1">Grade 1</button>
+            <button class="filter-btn" data-grade="2">Grade 2</button>
+            <button class="filter-btn" data-grade="3">Grade 3</button>
+            <button class="filter-btn" data-grade="4">Grade 4</button>
+            <button class="filter-btn" data-grade="5">Grade 5</button>
+        </div>
+    </div>
+
+    <div class="search-container">
+        <input type="text" 
+               class="search-bar" 
+               placeholder="Search by course title or domain..." 
+               id="searchInput">
+    </div>
+
+    <div class="domain-filter" id="domainFilter">
+        <button class="domain-btn active" data-domain="all">All Domains</button>
+        <button class="domain-btn" data-domain="physics">Physics</button>
+        <button class="domain-btn" data-domain="chemistry">Chemistry</button>
+        <button class="domain-btn" data-domain="biology">Biology</button>
+        <button class="domain-btn" data-domain="mathematics">Mathematics</button>
+        <button class="domain-btn" data-domain="computer-science">Computer Science</button>
+    </div>
+
+    <div class="course-grid" id="courseGrid"></div>
+
+    <div class="pagination">
+        <button class="page-btn" data-page="prev">Previous</button>
+        <button class="page-btn active" data-page="1">1</button>
+        <button class="page-btn" data-page="2">2</button>
+        <button class="page-btn" data-page="next">Next</button>
+    </div>
+
+    <div class="modal" id="courseModal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <div id="modalContent"></div>
+        </div>
+    </div>
+
+    <script>
+       const domains = ['physics', 'chemistry', 'biology', 'mathematics', 'computer-science'];
+const courseNames = {
+    physics: ['Mechanics', 'Thermodynamics', 'Quantum Physics', 'Electromagnetism'],
+    chemistry: ['Organic Chemistry', 'Inorganic Chemistry', 'Physical Chemistry', 'Biochemistry'],
+    biology: ['Cell Biology', 'Genetics', 'Ecology', 'Human Anatomy'],
+    mathematics: ['Calculus', 'Algebra', 'Statistics', 'Geometry'],
+    'computer-science': ['Programming', 'Data Structures', 'Algorithms', 'Web Development']
+};
+
+const courses = Array.from({ length: 20 }, (_, i) => {
+    const domain = domains[Math.floor(Math.random() * domains.length)];
+    const courseNameList = courseNames[domain];
+    const courseName = courseNameList[Math.floor(Math.random() * courseNameList.length)];
+    
+    return {
+        id: i + 1,
+        title: `${courseName} ${i + 1}`,
+        domain: domain,
+        duration: `${Math.floor(Math.random() * 10 + 1)} weeks`,
+        category: ['Free', 'Paid', 'Grade-specific'][Math.floor(Math.random() * 3)],
+        grade: Math.floor(Math.random() * 5 + 1),
+        description: `Learn ${courseName} with our comprehensive curriculum...`,
+        outcomes: [
+            `Understanding of ${courseName} fundamentals`,
+            'Practical application skills',
+            'Problem-solving abilities'
+        ],
+        fee: Math.floor(Math.random() * 100) * 10
+    };
+});
+
+let currentPage = 1;
+let currentFilter = 'all';
+let currentGrade = null;
+let currentDomain = 'all';
+let searchTerm = '';
+
+// Search Functionality
+document.getElementById('searchInput').addEventListener('input', (e) => {
+    searchTerm = e.target.value.toLowerCase();
+    currentPage = 1;
+    updatePagination();
+    displayCourses();
+});
+
+// Domain Filter
+document.querySelectorAll('.domain-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.domain-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentDomain = btn.dataset.domain;
+        currentPage = 1;
+        updatePagination();
+        displayCourses();
+    });
+});
+
+// Filter by Category and Grade
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        currentFilter = btn.dataset.filter;
+        if (currentFilter === 'grade') {
+            document.getElementById('gradeDropdown').classList.add('show');
+        } else {
+            document.getElementById('gradeDropdown').classList.remove('show');
+            currentGrade = null;
+        }
+        displayCourses();
+    });
+});
+
+// Grade Selection
+document.querySelectorAll('.filter-btn[data-grade]').forEach(btn => {
+    btn.addEventListener('click', () => {
+        currentGrade = parseInt(btn.dataset.grade);
+        document.getElementById('gradeDropdown').classList.remove('show');
+        displayCourses();
+    });
+});
+
+// Pagination Functionality
+document.querySelectorAll('.page-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        if (btn.dataset.page === 'prev' && currentPage > 1) {
+            currentPage--;
+        } else if (btn.dataset.page === 'next' && currentPage < 2) {
+            currentPage++;
+        } else if (!isNaN(parseInt(btn.dataset.page))) {
+            currentPage = parseInt(btn.dataset.page);
+        }
+        updatePagination();
+        displayCourses();
+    });
+});
+
+function updatePagination() {
+    document.querySelectorAll('.page-btn').forEach(btn => {
+        btn.classList.remove('active');
+        if (btn.dataset.page === currentPage.toString()) {
+            btn.classList.add('active');
+        }
+    });
+}
+
+function filterCourses() {
+    let filtered = [...courses];
+    
+    if (searchTerm) {
+        filtered = filtered.filter(course => 
+            course.title.toLowerCase().includes(searchTerm) ||
+            course.domain.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    if (currentDomain !== 'all') {
+        filtered = filtered.filter(course => course.domain === currentDomain);
+    }
+    
+    if (currentFilter === 'free') {
+        filtered = filtered.filter(course => course.category === 'Free');
+    } else if (currentFilter === 'paid') {
+        filtered = filtered.filter(course => course.category === 'Paid');
+    } else if (currentFilter === 'grade' && currentGrade) {
+        filtered = filtered.filter(course => 
+            course.category === 'Grade-specific' && 
+            course.grade === currentGrade
+        );
+    }
+    return filtered;
+}
+
+function displayCourses() {
+    const filtered = filterCourses();
+    const start = (currentPage - 1) * 10;
+    const end = start + 10;
+    const pageContent = filtered.slice(start, end);
+
+    const grid = document.getElementById('courseGrid');
+    grid.innerHTML = '';
+
+    pageContent.forEach(course => {
+        const card = document.createElement('div');
+        card.className = 'course-card';
+        card.innerHTML = `
+            <h3>${course.title}</h3>
+            <p>Domain: ${course.domain.replace('-', ' ').toUpperCase()}</p>
+            <p>Duration: ${course.duration}</p>
+            <p>Category: ${course.category}</p>
+            ${course.category === 'Grade-specific' ? `<p>Grade: ${course.grade}</p>` : ''}
+            <button class="join-btn" data-id="${course.id}">Join Course</button>
+        `;
+        grid.appendChild(card);
+    });
+
+    document.querySelectorAll('.join-btn').forEach(btn => {
+        btn.addEventListener('click', () => showModal(btn.dataset.id));
+    });
+}
+
+function showModal(courseId) {
+    const course = courses.find(c => c.id === parseInt(courseId));
+    const modal = document.getElementById('courseModal');
+    const content = document.getElementById('modalContent');
+
+    content.innerHTML = `
+        <h2>${course.title}</h2>
+        <p>Domain: ${course.domain.replace('-', ' ').toUpperCase()}</p>
+        <p>Duration: ${course.duration}</p>
+        <p>Category: ${course.category}</p>
+        <p>${course.description}</p>
+    `;
+
+    modal.style.display = 'block';
+}
+
+document.querySelector('.close-btn').addEventListener('click', () => {
+    document.getElementById('courseModal').style.display = 'none';
+});
+
+displayCourses();
+
+    </script>
+</body>
+</html>
