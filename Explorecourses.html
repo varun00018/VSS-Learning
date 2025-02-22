@@ -63,33 +63,89 @@
         }
 
         .search-container {
-    width: 100%;
-    max-width: 600px;
-    margin: 2rem auto;
-    padding: 0 1rem;
-    position: relative;
-}
+            width: 100%;
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            position: relative;
+            display: flex;
+            gap: 1rem;
+        }
 
-.search-bar {
-    width: 100%;
-    padding: 1rem;
-    font-size: 1.1rem;
-    border: 2px solid var(--secondary-bg);
-    border-radius: 25px;
-    background-color: rgba(139, 10, 80, 0.1);
-    color: var(--text-primary);
-    transition: all 0.3s ease;
-    outline: none;
-}
+        .search-bar {
+            flex-grow: 1;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--secondary-bg);
+            border-radius: 25px;
+            background-color: rgba(139, 10, 80, 0.1);
+            color: var(--text-primary);
+            transition: all 0.3s ease;
+            outline: none;
+        }
 
-.search-bar:focus {
-    border-color: var(--interactive);
-    box-shadow: 0 0 15px rgba(194, 24, 91, 0.3);
-}
+        .search-bar:focus {
+            border-color: var(--interactive);
+            box-shadow: 0 0 15px rgba(194, 24, 91, 0.3);
+        }
 
-.search-bar::placeholder {
-    color: var(--text-secondary);
-}
+        .search-bar::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .category-dropdown {
+            position: relative;
+            min-width: 200px;
+        }
+
+        .category-btn {
+            width: 100%;
+            padding: 1rem;
+            font-size: 1.1rem;
+            border: 2px solid var(--secondary-bg);
+            border-radius: 25px;
+            background-color: rgba(139, 10, 80, 0.1);
+            color: var(--text-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: left;
+        }
+
+        .category-btn:hover {
+            border-color: var(--interactive);
+        }
+
+        .category-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            background-color: var(--secondary-bg);
+            border-radius: 8px;
+            margin-top: 0.5rem;
+            padding: 0.5rem;
+            z-index: 1000;
+        }
+
+        .category-content.show {
+            display: block;
+        }
+
+        .category-item {
+            padding: 0.5rem 1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: background-color 0.3s;
+        }
+
+        .category-item:hover {
+            background-color: var(--interactive);
+        }
+
+        .category-item.active {
+            background-color: var(--interactive);
+        }
 
         .filter-btn {
             padding: 0.5rem 1rem;
@@ -301,37 +357,25 @@
     <div class="search-container">
         <input type="text" 
                class="search-bar" 
-               placeholder="Search for courses..." 
+               placeholder="Search for courses by title or domain..." 
                id="searchInput">
-    </div>
-
-    <div class="filter-section">
-        <button class="filter-btn" data-filter="free">Free Courses</button>
-        <button class="filter-btn" data-filter="paid">Paid Courses</button>
-        <button class="filter-btn" data-filter="grade">Grade-Specific Courses</button>
-        <div class="grade-dropdown" id="gradeDropdown">
-            <button class="filter-btn" data-grade="1">Grade 1</button>
-            <button class="filter-btn" data-grade="2">Grade 2</button>
-            <button class="filter-btn" data-grade="3">Grade 3</button>
-            <button class="filter-btn" data-grade="4">Grade 4</button>
-            <button class="filter-btn" data-grade="5">Grade 5</button>
+        <div class="category-dropdown">
+            <button class="category-btn" id="categoryBtn">All Categories</button>
+            <div class="category-content" id="categoryContent">
+                <div class="category-item active" data-category="all">All Categories</div>
+                <div class="category-item" data-category="free">Free Courses</div>
+                <div class="category-item" data-category="paid">Paid Courses</div>
+                <div class="category-item" data-category="grade">Grade-Specific Courses</div>
+                <div class="domain-section">
+                    <div class="category-item" data-domain="all">All Domains</div>
+                    <div class="category-item" data-domain="physics">Physics</div>
+                    <div class="category-item" data-domain="chemistry">Chemistry</div>
+                    <div class="category-item" data-domain="biology">Biology</div>
+                    <div class="category-item" data-domain="mathematics">Mathematics</div>
+                    <div class="category-item" data-domain="computer-science">Computer Science</div>
+                </div>
+            </div>
         </div>
-    </div>
-
-    <div class="search-container">
-        <input type="text" 
-               class="search-bar" 
-               placeholder="Search by course title or domain..." 
-               id="searchInput">
-    </div>
-
-    <div class="domain-filter" id="domainFilter">
-        <button class="domain-btn active" data-domain="all">All Domains</button>
-        <button class="domain-btn" data-domain="physics">Physics</button>
-        <button class="domain-btn" data-domain="chemistry">Chemistry</button>
-        <button class="domain-btn" data-domain="biology">Biology</button>
-        <button class="domain-btn" data-domain="mathematics">Mathematics</button>
-        <button class="domain-btn" data-domain="computer-science">Computer Science</button>
     </div>
 
     <div class="course-grid" id="courseGrid"></div>
@@ -359,6 +403,7 @@ const courseNames = {
     mathematics: ['Calculus', 'Algebra', 'Statistics', 'Geometry'],
     'computer-science': ['Programming', 'Data Structures', 'Algorithms', 'Web Development']
 };
+
 
 const courses = Array.from({ length: 20 }, (_, i) => {
     const domain = domains[Math.floor(Math.random() * domains.length)];
