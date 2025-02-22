@@ -579,6 +579,54 @@ document.querySelector('.close-btn').addEventListener('click', () => {
 
 displayCourses();
 
+        // Add these event listeners after your existing script
+
+// Category Dropdown Toggle
+const categoryBtn = document.getElementById('categoryBtn');
+const categoryContent = document.getElementById('categoryContent');
+
+// Toggle dropdown when clicking the button
+categoryBtn.addEventListener('click', (e) => {
+    e.stopPropagation(); // Prevent event from bubbling to document
+    categoryContent.classList.toggle('show');
+});
+
+// Close dropdown when clicking outside
+document.addEventListener('click', (e) => {
+    if (!categoryBtn.contains(e.target) && !categoryContent.contains(e.target)) {
+        categoryContent.classList.remove('show');
+    }
+});
+
+// Handle category selection
+document.querySelectorAll('.category-item').forEach(item => {
+    item.addEventListener('click', () => {
+        // Update button text
+        categoryBtn.textContent = item.textContent;
+        
+        // Remove active class from all items
+        document.querySelectorAll('.category-item').forEach(i => i.classList.remove('active'));
+        
+        // Add active class to selected item
+        item.classList.add('active');
+        
+        // Update filters based on selection
+        if (item.dataset.category) {
+            currentFilter = item.dataset.category;
+        } else if (item.dataset.domain) {
+            currentDomain = item.dataset.domain;
+        }
+        
+        // Close dropdown
+        categoryContent.classList.remove('show');
+        
+        // Reset to first page and update display
+        currentPage = 1;
+        updatePagination();
+        displayCourses();
+    });
+});
+
     </script>
 </body>
 </html>
